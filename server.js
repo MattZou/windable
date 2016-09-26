@@ -15,7 +15,7 @@ app.use(express.urlencoded());
 app.get('/leaflet', (req, res) => {
   res.status(200).sendfile('./examples/leaflet/basic.html');
 });
-
+//prevent access from ip:port
 app.get('/', (req, res) => {
   res.status(404); 
   res.end();
