@@ -12,14 +12,21 @@ app.use('/dist', express.static('dist'));
 app.use(express.compress());
 app.use(express.urlencoded());
 
+const sendConfigurable = (req, res) => {
+  res.status(200).sendfile('./examples/googleMaps/configurable.html');
+};
+
+app.get('/google_basic', (req, res) => {
+  res.status(200).sendfile('./examples/googleMaps/basic.html');
+});
+
+app.get('/google_configurable', sendConfigurable);
+
 app.get('/leaflet', (req, res) => {
   res.status(200).sendfile('./examples/leaflet/basic.html');
 });
 
-app.get('/', (req, res) => {
-  res.status(404); 
-  res.end();
-});
+app.get('/', sendConfigurable);
 
 // Start the server
 const server = app.listen(app.get('port'), () => {

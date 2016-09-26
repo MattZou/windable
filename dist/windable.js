@@ -3,6 +3,8 @@
 
 var _wind = require('./wind/wind');
 
+// @TODO: https://github.com/dannycochran/windable/issues/6
+// Fix this nonsense.
 window.WindMap = _wind.WindMap;
 
 },{"./wind/wind":9}],2:[function(require,module,exports){
@@ -31,7 +33,7 @@ var CanvasRenderer = exports.CanvasRenderer = function (_Renderer) {
   function CanvasRenderer() {
     _classCallCheck(this, CanvasRenderer);
 
-    return _possibleConstructorReturn(this, Object.getPrototypeOf(CanvasRenderer).apply(this, arguments));
+    return _possibleConstructorReturn(this, (CanvasRenderer.__proto__ || Object.getPrototypeOf(CanvasRenderer)).apply(this, arguments));
   }
 
   _createClass(CanvasRenderer, [{
@@ -72,7 +74,7 @@ var CanvasRenderer = exports.CanvasRenderer = function (_Renderer) {
   }, {
     key: 'clear_',
     value: function clear_() {
-      _get(Object.getPrototypeOf(CanvasRenderer.prototype), 'clear_', this).call(this);
+      _get(CanvasRenderer.prototype.__proto__ || Object.getPrototypeOf(CanvasRenderer.prototype), 'clear_', this).call(this);
       if (!this.mapBounds_) return;
 
       this.context.clearRect(0, 0, this.mapBounds_.width, this.mapBounds_.height);
@@ -96,7 +98,7 @@ var CanvasRenderer = exports.CanvasRenderer = function (_Renderer) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+    value: true
 });
 exports.WebGLRenderer = undefined;
 
@@ -115,125 +117,125 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var WebGLRenderer = exports.WebGLRenderer = function (_Renderer) {
-  _inherits(WebGLRenderer, _Renderer);
+    _inherits(WebGLRenderer, _Renderer);
 
-  function WebGLRenderer(canvas, extent, context) {
-    _classCallCheck(this, WebGLRenderer);
+    function WebGLRenderer(canvas, extent, context) {
+        _classCallCheck(this, WebGLRenderer);
 
-    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(WebGLRenderer).call(this, canvas, extent, context));
+        var _this = _possibleConstructorReturn(this, (WebGLRenderer.__proto__ || Object.getPrototypeOf(WebGLRenderer)).call(this, canvas, extent, context));
 
-    _this.gl = context;
+        _this.gl = context;
 
-    _this.particlesProgram = _this.createProgram_(_shaders.particleVert, _shaders.particleFrag);
-    _this.rectProgram = _this.createProgram_(_shaders.rectVert, _shaders.rectFrag);
+        _this.particlesProgram = _this.createProgram_(_shaders.particleVert, _shaders.particleFrag);
+        _this.rectProgram = _this.createProgram_(_shaders.rectVert, _shaders.rectFrag);
 
-    _this.gl.linkProgram(_this.particlesProgram);
-    _this.gl.linkProgram(_this.rectProgram);
+        _this.gl.linkProgram(_this.particlesProgram);
+        _this.gl.linkProgram(_this.rectProgram);
 
-    _this.gl.enable(_this.gl.BLEND);
-    _this.gl.blendEquation(_this.gl.FUNC_ADD);
-    _this.gl.disable(_this.gl.DEPTH_TEST);
+        _this.gl.enable(_this.gl.BLEND);
+        _this.gl.blendEquation(_this.gl.FUNC_ADD);
+        _this.gl.disable(_this.gl.DEPTH_TEST);
 
-    canvas.addEventListener('webglcontextlost', function (e) {
-      return _this.onContextLost_(e);
-    });
-    canvas.addEventListener('webglcontextrestored', function (e) {
-      return _this.onContextRestored_(e);
-    });
-    return _this;
-  }
-
-  _createClass(WebGLRenderer, [{
-    key: 'createProgram_',
-    value: function createProgram_(vert, frag) {
-      var _this2 = this;
-
-      var getShaders = function getShaders(type, source) {
-        var shader = _this2.gl.createShader(type);
-        _this2.gl.shaderSource(shader, source);
-        _this2.gl.compileShader(shader);
-        return shader;
-      };
-
-      var vertexShader = getShaders(this.gl.VERTEX_SHADER, vert);
-      var fragmentShader = getShaders(this.gl.FRAGMENT_SHADER, frag);
-      var shaderProgram = this.gl.createProgram();
-
-      this.gl.attachShader(shaderProgram, vertexShader);
-      this.gl.attachShader(shaderProgram, fragmentShader);
-      return shaderProgram;
+        canvas.addEventListener('webglcontextlost', function (e) {
+            return _this.onContextLost_(e);
+        });
+        canvas.addEventListener('webglcontextrestored', function (e) {
+            return _this.onContextRestored_(e);
+        });
+        return _this;
     }
-  }, {
-    key: 'prepare_',
-    value: function prepare_() {
-      this.clear_();
 
-      var buffer = this.gl.createBuffer();
-      this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer);
-      this.gl.lineWidth(this.config_.particleWidth);
+    _createClass(WebGLRenderer, [{
+        key: 'createProgram_',
+        value: function createProgram_(vert, frag) {
+            var _this2 = this;
 
-      return this;
-    }
-  }, {
-    key: 'draw_',
-    value: function draw_(buckets, bounds) {
-      // Blend the existing layers.
-      this.gl.blendFunc(this.gl.ZERO, this.gl.SRC_ALPHA);
-      this.gl.useProgram(this.rectProgram);
+            var getShaders = function getShaders(type, source) {
+                var shader = _this2.gl.createShader(type);
+                _this2.gl.shaderSource(shader, source);
+                _this2.gl.compileShader(shader);
+                return shader;
+            };
 
-      var rectLocation = this.gl.getAttribLocation(this.rectProgram, 'a_position');
+            var vertexShader = getShaders(this.gl.VERTEX_SHADER, vert);
+            var fragmentShader = getShaders(this.gl.FRAGMENT_SHADER, frag);
+            var shaderProgram = this.gl.createProgram();
 
-      this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array([-1.0, -1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0]), this.gl.STATIC_DRAW);
-      this.gl.enableVertexAttribArray(rectLocation);
-      this.gl.vertexAttribPointer(rectLocation, 2, this.gl.FLOAT, false, 0, 0);
-      this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
+            this.gl.attachShader(shaderProgram, vertexShader);
+            this.gl.attachShader(shaderProgram, fragmentShader);
+            return shaderProgram;
+        }
+    }, {
+        key: 'prepare_',
+        value: function prepare_() {
+            this.clear_();
 
-      // Draw the particles.
-      this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
-      this.gl.useProgram(this.particlesProgram);
-      var particlesBuffer = new Float32Array(this.particleVectors_);
+            var buffer = this.gl.createBuffer();
+            this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer);
+            this.gl.lineWidth(this.config_.particleWidth);
 
-      this.gl.bufferData(this.gl.ARRAY_BUFFER, particlesBuffer, this.gl.STATIC_DRAW);
+            return this;
+        }
+    }, {
+        key: 'draw_',
+        value: function draw_(buckets, bounds) {
+            // Blend the existing layers.
+            this.gl.blendFunc(this.gl.ZERO, this.gl.SRC_ALPHA);
+            this.gl.useProgram(this.rectProgram);
 
-      var resolutionLocation = this.gl.getUniformLocation(this.particlesProgram, 'u_resolution');
-      this.gl.uniform2f(resolutionLocation, this.canvas.width, this.canvas.height);
+            var rectLocation = this.gl.getAttribLocation(this.rectProgram, 'a_position');
 
-      var positionLocation = this.gl.getAttribLocation(this.particlesProgram, 'a_position');
-      var rgbaLocation = this.gl.getAttribLocation(this.particlesProgram, 'a_rgba');
+            this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array([-1.0, -1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0]), this.gl.STATIC_DRAW);
+            this.gl.enableVertexAttribArray(rectLocation);
+            this.gl.vertexAttribPointer(rectLocation, 2, this.gl.FLOAT, false, 0, 0);
+            this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
 
-      this.gl.enableVertexAttribArray(positionLocation);
-      this.gl.enableVertexAttribArray(rgbaLocation);
+            // Draw the particles.
+            this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
+            this.gl.useProgram(this.particlesProgram);
+            var particlesBuffer = new Float32Array(this.particleVectors_);
 
-      this.gl.vertexAttribPointer(positionLocation, 2, this.gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
-      this.gl.vertexAttribPointer(rgbaLocation, 4, this.gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 8);
+            this.gl.bufferData(this.gl.ARRAY_BUFFER, particlesBuffer, this.gl.STATIC_DRAW);
 
-      this.gl.drawArrays(this.gl.LINES, 0, this.particleVectors_.length / 6);
+            var resolutionLocation = this.gl.getUniformLocation(this.particlesProgram, 'u_resolution');
+            this.gl.uniform2f(resolutionLocation, this.canvas.width, this.canvas.height);
 
-      return this;
-    }
-  }, {
-    key: 'clear_',
-    value: function clear_() {
-      _get(Object.getPrototypeOf(WebGLRenderer.prototype), 'clear_', this).call(this);
-      this.context.clear(this.context.COLOR_BUFFER_BIT);
-      this.context.viewport(0, 0, this.context.drawingBufferWidth, this.context.drawingBufferHeight);
-      return this;
-    }
-  }, {
-    key: 'onContextLost_',
-    value: function onContextLost_(e) {
-      e.preventDefault();
-      this.stopped_ = true;
-      this.clear_();
-    }
-  }, {
-    key: 'onContextRestored_',
-    value: function onContextRestored_(e) {
-      this.clear_().start_();
-    }
-  }]);
+            var positionLocation = this.gl.getAttribLocation(this.particlesProgram, 'a_position');
+            var rgbaLocation = this.gl.getAttribLocation(this.particlesProgram, 'a_rgba');
 
-  return WebGLRenderer;
+            this.gl.enableVertexAttribArray(positionLocation);
+            this.gl.enableVertexAttribArray(rgbaLocation);
+
+            this.gl.vertexAttribPointer(positionLocation, 2, this.gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
+            this.gl.vertexAttribPointer(rgbaLocation, 4, this.gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 8);
+
+            this.gl.drawArrays(this.gl.LINES, 0, this.particleVectors_.length / 6);
+
+            return this;
+        }
+    }, {
+        key: 'clear_',
+        value: function clear_() {
+            _get(WebGLRenderer.prototype.__proto__ || Object.getPrototypeOf(WebGLRenderer.prototype), 'clear_', this).call(this);
+            this.context.clear(this.context.COLOR_BUFFER_BIT);
+            this.context.viewport(0, 0, this.context.drawingBufferWidth, this.context.drawingBufferHeight);
+            return this;
+        }
+    }, {
+        key: 'onContextLost_',
+        value: function onContextLost_(e) {
+            e.preventDefault();
+            this.stopped_ = true;
+            this.clear_();
+        }
+    }, {
+        key: 'onContextRestored_',
+        value: function onContextRestored_(e) {
+            this.clear_().start_();
+        }
+    }]);
+
+    return WebGLRenderer;
 }(_renderer.Renderer);
 
 ;
@@ -807,7 +809,7 @@ var Renderer = exports.Renderer = function () {
     /**
      * Returns the wind speed & direction at given coordinates lat,lng for the
      * current data frame.
-      * @param {number} lat A latitude value.
+       * @param {number} lat A latitude value.
      * @param {number} lng A longitude value.
      * @return {!Array<!number>} [wind direction, speed].
      */
@@ -1126,7 +1128,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.WindMap = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /**
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      * A light controller class for using a modified version of Esri's Windy.JS.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      * A light controller class for using a modified version of Earth.nullschool.
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       */
 
 var _canvas = require('./../renderers/canvas/canvas');
@@ -1144,7 +1146,6 @@ var WindMap = exports.WindMap = function () {
    *
    * @param {!ConfigPayload} config An instance of ConfigPayload.
    */
-
   function WindMap(config) {
     var _this = this;
 

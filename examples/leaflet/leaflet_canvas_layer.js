@@ -8,8 +8,8 @@ L.CanvasLayer = L.Class.extend({
   includes: [L.Mixin.Events, L.Mixin.TileLoader],
 
   options: {
-      minZoom: 0,
-      maxZoom: 28,
+      minZoom: 3,
+      maxZoom: 8,
       tileSize: 256,
       subdomains: 'abc',
       errorTileUrl: '',

@@ -2,71 +2,172 @@
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Wind Animation Google Maps</title>
-
+    <title>风场图</title>
     <script src="./../../dist/windable.min.js" defer></script>
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.css" />
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.js" defer></script>
+    <link rel="stylesheet" href="https://cdn.bootcss.com/leaflet/0.7.7/leaflet.css" />
+    <script src="https://cdn.bootcss.com/leaflet/0.7.7/leaflet.js" defer></script>
     <script src="./examples/leaflet/leaflet_canvas_layer.js" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.16/d3.min.js" defer></script>
-
+    <script src="https://cdn.bootcss.com/d3/4.2.5/d3.min.js" defer></script>
+  
     <style>
-      html, body, #leaflet-map-canvas {
-        width: 100%;
-        height: 100%;
-        margin: 0;
-        padding: 0 0 0 0;
-      }
+    html, body, #leaflet-map-canvas {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0 0 0 0;
+    }
+    #altitude-menu, #time-picker {
+    position: absolute;
+    width: 150px;
+    top: 10px;
+    right: 10px;
+    background-color: WhiteSmoke;
+    padding: 10px;
+    }
+    label {
+    padding: 5px;
+    display: block;
+    }
+    select {
+    width: 100%;
+    }
+    input {
+    width: 100%;
+    }
+    #time-picker {
+    top: 90px;
+    }
+    #velocity-label {
+    position: absolute;
+    bottom: 85px;
+    left: 20px;
+    padding: 5px;
+    background-color: white;
+    }
+    #velocity-scale {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    display: flex;
+    flex-flow: row nowrap;
+    list-style: none;
+    background-color: white;
+    padding-left: 0;
+    }
+    #velocity-scale > li {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    flex-flow: column nowrap;
+    border-right: 1px solid lightgrey;
+    font-size: 10px;
+    }
+    #velocity-scale > li span {
+    display: inline-block;
+    flex: 0 0 auto;
+    height: 25px;
+    text-align: center;
+    line-height: 25px;
+    }
     </style>
   </head>
-
   <body>
     <div id="leaflet-map-canvas"></div>
+    <div id="altitude-menu">
+      <label>时间 </label>
+      <input type="date" min="2016-09-07" max="2016-09-26" value="2016-09-25" id="data-select" />
+      <label>高度 (毫巴)</label>
+    <select id="millibar-levels"></select>
+  </div>
+  <label id="velocity-label">风速 (km / h)</label>
+  <ul id="velocity-scale">
+  </ul>
 
-    <script type="text/javascript">
-      window.onload = function() {
-        // Initialize the map.
-        const id = 'leaflet-map-canvas';
-        const element = document.getElementById(id);
-        const map = L.map(id).setView([39.3, -45.8], 3);
-
-        L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
-          attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
-          maxZoom: 18,
-          id: 'dannycochran.00kfkg04',
-          accessToken: 'pk.eyJ1IjoiZGFubnljb2NocmFuIiwiYSI6ImNpbmZjYWUxMTB4dGp1OGx3NXdrbjhxbXcifQ.t1CXHbqB108Se78ipi4StQ'
-        }).addTo(map);
-
-        const MyLayer = L.CanvasLayer.extend({render: () => {}});
-        const layer = new MyLayer();
-        layer.addTo(map);
-
-        const windMap = new WindMap({
-          canvas: layer.getCanvas(),
-          extent: () => {
-            const bounds = map.getBounds();
-            return {
-              width: element.clientWidth,
-              height: element.clientHeight,
-              latlng:[
-                [bounds._southWest.lng, bounds._southWest.lat],
-                [bounds._northEast.lng, bounds._northEast.lat]
-              ]
-            };
-          }
-        });
-        ['bounds_changed', 'movestart', 'move'].forEach(listener => {
-          map.on(listener, windMap.update.bind(windMap));
-        });
-
-        // Fetch data for 700 millibars.
-        const mapDataUrl = 'https://raw.githubusercontent.com/dannycochran/windable/master/data/2016040900_700.json'
-        d3.json(mapDataUrl, (err, windData) => {
-          windMap.update({data: windData});
-        });
-      };
-    </script>
-  </body>
+  <script type="text/javascript">
+  window.onload = function() {
+  // Initialize the map.
+  const id = 'leaflet-map-canvas';
+  const element = document.getElementById(id);
+  const map = L.map(id).setView([34, 100], 5);
+  var basemap =   L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+  attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+  maxZoom: 8,
+  id: 'mapbox.satellite',
+  accessToken: 'pk.eyJ1IjoibWF0dHpvdSIsImEiOiJjaXRkbmMxZGYwMGM0MnN0b2l4YTN2NHlyIn0.s8GB5KTjyYVVij0R6k7tNA'
+  });
+  basemap.addTo(map);
+  const MyLayer = L.CanvasLayer.extend({render: () => {}});
+  const layer = new MyLayer();
+  layer.addTo(map);
+  const windMap = new WindMap({
+  canvas: layer.getCanvas(),
+  extent: () => {
+  const bounds = map.getBounds();
+  return {
+  width: element.clientWidth,
+  height: element.clientHeight,
+  latlng:[
+  [bounds._southWest.lng, bounds._southWest.lat],
+  [bounds._northEast.lng, bounds._northEast.lat]
+  ]
+  };
+  }
+  });
+  ['bounds_changed', 'movestart', 'move'].forEach(listener => {
+  map.on(listener, windMap.update.bind(windMap));
+  });
+  // Menus
+  const altitudeMenu = document.getElementById('millibar-levels');
+  const velocityScale = document.getElementById('velocity-scale');
+  const dataPicker = document.getElementById('data-select');
+  // Altitude menu.
+  const selected = 1000;
+  const levels = [1000, 925, 850, 700, 500, 400, 300, 250, 200];
+  levels.forEach(level => {
+  const select = document.createElement('option')
+  select.innerHTML = level;
+  altitudeMenu.appendChild(select);
+  });
+  altitudeMenu.selectedIndex = levels.indexOf(selected);
+  // Draw color scale
+  function drawVelocityScale() {
+  const scale = windMap.renderer.velocityScale();
+  velocityScale.innerHTML = '';
+  scale.forEach((s, idx) => {
+  const colorItem = document.createElement('li');
+  velocityScale.appendChild(colorItem);
+  const color = colorItem.appendChild(document.createElement('span'));
+  color.style['background-color'] = s[0];
+  const label = colorItem.appendChild(document.createElement('span'));
+  const prevValue = scale[idx - 1] ? scale[idx - 1][1] : 0;
+  label.innerHTML = `${prevValue} - ${s[1]}`;
+  });
+  }
+  //event
+  const onSelectAltitude = function(e) {
+  altitudeMenu.disabled = true;
+  fetchData();
+  };
+  const onSelectDate = function(e) {
+  dataPicker.disabled = true;
+  fetchData();
+  };
+  altitudeMenu.addEventListener('change', onSelectAltitude);
+  dataPicker.addEventListener('change', onSelectDate);
+  //fetchData
+  function fetchData() {
+  const selectedIndex = altitudeMenu.selectedIndex;
+  var selectDate = dataPicker.value.replace(/-/g,"");
+  const mapDataUrl = `http://7xrc2m.com1.z0.glb.clouddn.com/wind/json/`+ selectDate +`_`+ levels[selectedIndex] +`.json`;
+  d3.json(mapDataUrl, (err, windData) => {
+  windMap.update({data: windData});
+  drawVelocityScale();
+  altitudeMenu.disabled = false;
+  dataPicker.disabled = false;
+  });
+  }
+  fetchData();
+  };
+  </script>
+</body>
 </html>
